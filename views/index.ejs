@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Discord RPC Dashboard</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="https://cdn.discordapp.com/embed/avatars/0.png">
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <div class="logo">
+        <img src="<%= avatar %>" alt="Discord Avatar">
+        <h1>Discord RPC Dashboard</h1>
+      </div>
+      <div class="status">
+        <span class="status-indicator <%= botReady ? 'online' : 'offline' %>"></span>
+        <span class="status-text"><%= username %></span>
+      </div>
+    </header>
+
+    <div class="notification" id="notification"></div>
+
+    <div class="card">
+      <div class="card-header">
+        <h2>Rich Presence Configuration</h2>
+        <div class="toggle-buttons">
+          <button class="btn btn-success" onclick="startRPC()">▶️ Start</button>
+          <button class="btn btn-danger" onclick="stopRPC()">⏸️ Stop</button>
+        </div>
+      </div>
+
+      <form id="rpcForm" class="form">
+        <!-- Application Settings -->
+        <div class="form-section highlight">
+          <h3>🎯 Application Settings</h3>
+          <div class="info-box">
+            <p><strong>Setup Instructions:</strong></p>
+            <ol>
+              <li>Go to <a href="https://discord.com/developers/applications" target="_blank">Discord Developer Portal</a></li>
+              <li>Create a new application or select existing one</li>
+              <li>Copy the Application ID from General Information</li>
+              <li>Upload images in Rich Presence → Art Assets</li>
+              <li>Use the asset key names (e.g., "logo", "icon") in the form below</li>
+            </ol>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group full-width">
+              <label for="applicationId">Application ID *</label>
+              <input type="text" id="applicationId" name="applicationId" value="<%= config.applicationId || '' %>" 
+                     placeholder="123456789012345678" required>
+              <small>Your Discord application ID from developer portal</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Activity Details -->
+        <div class="form-section">
+          <h3>📝 Activity Details</h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="name">Activity Name *</label>
+              <input type="text" id="name" name="name" value="<%= config.name %>" 
+                     placeholder="My Custom Game" required>
+              <small>Main activity title</small>
+            </div>
+
+            <div class="form-group">
+              <label for="type">Activity Type *</label>
+              <select id="type" name="type" required>
+                <% validTypes.forEach(t => { %>
+                  <option value="<%= t %>" <%= config.type === t ? 'selected' : '' %>><%= t %></option>
+                <% }); %>
+              </select>
+              <small>Type of activity</small>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="details">Details</label>
+              <input type="text" id="details" name="details" value="<%= config.details || '' %>" 
+                     placeholder="In Game">
+              <small>First line of text</small>
+            </div>
+
+            <div class="form-group">
+              <label for="state">State</label>
+              <input type="text" id="state" name="state" value="<%= config.state || '' %>" 
+                     placeholder="Playing Solo">
+              <small>Second line of text</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Images (Asset Keys) -->
+        <div class="form-section">
+          <h3>🖼️ Images (Asset Keys)</h3>
+          <div class="info-box">
+            <p><strong>How to use Asset Keys:</strong></p>
+            <ul>
+              <li>✅ Upload images to your application's Art Assets</li>
+              <li>✅ Use the asset key name (e.g., "logo", "banner", "icon")</li>
+              <li>✅ Asset keys are case-insensitive</li>
+              <li>✅ You can also use direct Discord CDN URLs</li>
+            </ul>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="largeImageKey">Large Image Key</label>
+              <input type="text" id="largeImageKey" name="largeImageKey" value="<%= config.largeImageKey || '' %>" 
+                     placeholder="logo">
+              <small>Asset key or Discord CDN URL</small>
+            </div>
+
+            <div class="form-group">
+              <label for="largeImageText">Large Image Text</label>
+              <input type="text" id="largeImageText" name="largeImageText" value="<%= config.largeImageText || '' %>" 
+                     placeholder="Hover text">
+              <small>Text shown on hover</small>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="smallImageKey">Small Image Key</label>
+              <input type="text" id="smallImageKey" name="smallImageKey" value="<%= config.smallImageKey || '' %>" 
+                     placeholder="icon">
+              <small>Small badge image (bottom right)</small>
+            </div>
+
+            <div class="form-group">
+              <label for="smallImageText">Small Image Text</label>
+              <input type="text" id="smallImageText" name="smallImageText" value="<%= config.smallImageText || '' %>" 
+                     placeholder="Status">
+              <small>Text shown on hover</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="form-section">
+          <h3>🔘 Buttons (Max 2)</h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="button1Text">Button 1 Text</label>
+              <input type="text" id="button1Text" name="button1Text" value="<%= config.button1Text || '' %>" 
+                     placeholder="Visit Website" maxlength="32">
+              <small>First button label (max 32 chars)</small>
+            </div>
+
+            <div class="form-group">
+              <label for="button1Url">Button 1 URL</label>
+              <input type="url" id="button1Url" name="button1Url" value="<%= config.button1Url || '' %>" 
+                     placeholder="https://example.com">
+              <small>First button URL</small>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="button2Text">Button 2 Text</label>
+              <input type="text" id="button2Text" name="button2Text" value="<%= config.button2Text || '' %>" 
+                     placeholder="GitHub" maxlength="32">
+              <small>Second button label (max 32 chars)</small>
+            </div>
+
+            <div class="form-group">
+              <label for="button2Url">Button 2 URL</label>
+              <input type="url" id="button2Url" name="button2Url" value="<%= config.button2Url || '' %>" 
+                     placeholder="https://github.com">
+              <small>Second button URL</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Advanced Options -->
+        <div class="form-section">
+          <h3>⚙️ Advanced Options</h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="partySize">Party Size (Current)</label>
+              <input type="number" id="partySize" name="partySize" value="<%= config.partySize || '' %>" 
+                     placeholder="1" min="1">
+              <small>Current party members</small>
+            </div>
+
+            <div class="form-group">
+              <label for="partyMax">Party Max</label>
+              <input type="number" id="partyMax" name="partyMax" value="<%= config.partyMax || '' %>" 
+                     placeholder="4" min="1">
+              <small>Maximum party size</small>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group checkbox-group">
+              <label>
+                <input type="checkbox" id="startTimestamp" name="startTimestamp" 
+                       <%= config.startTimestamp ? 'checked' : '' %>>
+                <span>Show Elapsed Time</span>
+              </label>
+              <small>Display "elapsed" timestamp</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="button-group">
+          <button type="submit" class="btn btn-primary btn-large">💾 Save & Apply</button>
+          <button type="button" class="btn btn-secondary btn-large" onclick="resetConfig()">🔄 Reset</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Asset Viewer -->
+    <div class="card" style="margin-top: 20px;">
+      <div class="card-header">
+        <h2>🎨 Asset Viewer</h2>
+      </div>
+      <div class="form-section">
+        <p>Enter your Application ID and click "Fetch Assets" to view all uploaded assets.</p>
+        <div class="form-row">
+          <div class="form-group">
+            <input type="text" id="assetAppId" placeholder="Application ID">
+          </div>
+          <button class="btn btn-primary" onclick="fetchAssets()">🔍 Fetch Assets</button>
+        </div>
+        <div id="assetList" class="asset-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showNotification(message, type = 'success') {
+      const notification = document.getElementById('notification');
+      notification.textContent = message;
+      notification.className = `notification ${type} show`;
+      
+      setTimeout(() => {
+        notification.classList.remove('show');
+      }, 3000);
+    }
+
+    document.getElementById('rpcForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const formData = new FormData(e.target);
+      const config = {};
+      
+      for (const [key, value] of formData.entries()) {
+        if (key === 'startTimestamp') {
+          config[key] = true;
+        } else {
+          config[key] = value;
+        }
+      }
+      
+      if (!document.getElementById('startTimestamp').checked) {
+        config.startTimestamp = false;
+      }
+      
+      config.enabled = true;
+
+      try {
+        const response = await fetch('/api/config', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(config)
+        });
+
+        const result = await response.json();
+        showNotification(result.message, result.success ? 'success' : 'error');
+      } catch (error) {
+        showNotification('Failed to save config!', 'error');
+      }
+    });
+
+    async function startRPC() {
+      try {
+        const response = await fetch('/api/start', { method: 'POST' });
+        const result = await response.json();
+        showNotification(result.message, result.success ? 'success' : 'error');
+      } catch (error) {
+        showNotification('Failed to start RPC!', 'error');
+      }
+    }
+
+    async function stopRPC() {
+      try {
+        const response = await fetch('/api/stop', { method: 'POST' });
+        const result = await response.json();
+        showNotification(result.message, result.success ? 'success' : 'error');
+      } catch (error) {
+        showNotification('Failed to stop RPC!', 'error');
+      }
+    }
+
+    async function resetConfig() {
+      if (!confirm('Are you sure you want to reset all configuration?')) return;
+      
+      try {
+        const response = await fetch('/api/reset', { method: 'POST' });
+        const result = await response.json();
+        showNotification(result.message, result.success ? 'success' : 'error');
+        
+        if (result.success) {
+          setTimeout(() => location.reload(), 1000);
+        }
+      } catch (error) {
+        showNotification('Failed to reset config!', 'error');
+      }
+    }
+
+    async function fetchAssets() {
+      const appId = document.getElementById('assetAppId').value;
+      if (!appId) {
+        showNotification('Please enter an Application ID!', 'error');
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/assets/${appId}`);
+        const result = await response.json();
+        
+        if (result.success) {
+          const assetList = document.getElementById('assetList');
+          if (result.assets.length === 0) {
+            assetList.innerHTML = '<p>No assets found for this application.</p>';
+          } else {
+            assetList.innerHTML = '<h4>Available Assets:</h4>' + 
+              result.assets.map(asset => 
+                `<div class="asset-item">
+                  <strong>${asset.name}</strong> (ID: ${asset.id})
+                </div>`
+              ).join('');
+          }
+          showNotification(result.message, 'success');
+        } else {
+          showNotification(result.message, 'error');
+        }
+      } catch (error) {
+        showNotification('Failed to fetch assets!', 'error');
+      }
+    }
+  </script>
+</body>
+</html>

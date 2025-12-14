@@ -1,0 +1,18 @@
+{
+  "dependencies": {
+    "discord.js-selfbot-v13": "^3.7.1",
+    "dotenv": "^17.2.3",
+    "ejs": "^3.1.10",
+    "express": "^5.2.1"
+  },
+  "name": "rpc-app",
+  "module": "index.js",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}

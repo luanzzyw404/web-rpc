@@ -1,0 +1,21 @@
+{
+  "enabled": true,
+  "applicationId": "1449706817532723320",
+  "type": "PLAYING",
+  "name": "GOONING",
+  "details": "24/7",
+  "state": "CHILLING TOO",
+  "largeImageKey": "https://cdn.discordapp.com/attachments/1270624795549106227/1449601814558277793/4fd363ecf75460a2e94eef79ad57ce70759fb071.gif?ex=693f7e64&is=693e2ce4&hm=1100c5e797f351567cde8377b285a3da05e6a7981c01be299d18cec9f93414d2",
+  "largeImageText": "MEOW",
+  "smallImageKey": null,
+  "smallImageText": null,
+  "button1Text": null,
+  "button1Url": null,
+  "button2Text": null,
+  "button2Url": null,
+  "startTimestamp": false,
+  "partySize": null,
+  "partyMax": null,
+  "imageUrl": null,
+  "smallImageUrl": null
+}

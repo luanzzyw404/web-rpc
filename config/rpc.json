@@ -1,0 +1,15 @@
+{
+  "enabled": true,
+  "name": "Custom Status",
+  "details": "Doing something cool",
+  "state": "With discord.js-selfbot-v13",
+  "type": "PLAYING",
+  "largeImageKey": "https://cdn.discordapp.com/attachments/123456789/123456789/image.png",
+  "largeImageText": "Large Image",
+  "smallImageKey": "https://cdn.discordapp.com/attachments/123456789/123456789/small.png",
+  "smallImageText": "Small Image",
+  "button1Text": "Button 1",
+  "button1Url": "https://discord.com",
+  "button2Text": "Button 2",
+  "button2Url": "https://github.com"
+}
